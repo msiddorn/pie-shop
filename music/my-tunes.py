@@ -18,32 +18,35 @@ class MPlayer(object):
 
     def __init__(self):
         self.get_songs(self.file_root)
+        print('{} songs available for playing'.format(len(self.songs)))
     
     def get_songs(self, root_dir):
         artists = os.listdir(root_dir)
         
         for artist in artists:
-            print(artist)
             everything = os.listdir(root_dir + artist)
-            song_names = album_names = []
+            song_names = []
+            album_names = []
             for title in everything:
-                if os.path.isfile(title):
-                    extention = title.split('.')[-1]
-                    if extention in ['.mp3', '.m4a']:
+                path = '{}{}/{}'.format(root_dir, artist, title)
+                if os.path.isfile(path):
+                    extension = title.split('.')[-1]
+                    if extension in ['mp3', 'm4a']:
                         song_names.append(title)
                     else:
-                        print('Unrecognised extention "{}"'.format(extension))
-                elif os.path.isdir(title):
+                        print('Unrecognised extension "{}" for {}'.format(extension, title))
+                elif os.path.isdir(path):
                     album_names.append(title)
                 else:
                     print('{} not a file or folder apparently.'.format(title))
             self.add_songs(song_names, artist)
             for album in album_names:
+                path_1 = '{}{}/{}/'.format(root_dir, artist, album)
                 song_names = [
-                    title for title in os.listdir('{}{}/{}/'.format(root_dir, artist, album))
-                    if os.path.isfile(title)
+                    title for title in os.listdir(path_1)
+                    if os.path.isfile('{}/{}'.format(path_1, title))
                 ]
-                self.add_songs(songs, artist, album)
+                self.add_songs(song_names, artist, album)
 
     def add_songs(self, songs, artist, album='Unknown'):
         file_path = '{}{}/{}{{}}'.format(
